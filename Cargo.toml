@@ -1,0 +1,11 @@
+[package]
+name = "tranquil-breeze"
+version = "0.1.0"
+edition = "2021"
+publish = false
+
+[workspace]
+members = [".", "api", "service", "entity", "migration"]
+
+[dependencies]
+api = { path = "api" }

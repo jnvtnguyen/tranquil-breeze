@@ -1,0 +1,13 @@
+{
+  "name": "tranquil-breeze",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "dev": "npm-run-all --parallel dev:actix dev:svelte",
+    "dev:svelte": "cd client && npm run dev",
+    "dev:actix": "systemfd --no-pid -s http::8080 -- cargo watch --ignore client/* -x run"
+  },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5"
+  }
+}

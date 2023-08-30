@@ -1,0 +1,11 @@
+target
+.vscode/
+.DS_STORE
+.env
+.idea/
+*.log
+build
+node_modules/
+.env.*
+Cargo.lock
+.svelte-kit
