@@ -1,5 +1,7 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig, type UserConfig } from 'vite';
+import path from 'path';
+import Icons from 'unplugin-icons/vite';
 
 export default ({ mode }: UserConfig) => {
 	let dev = {};
@@ -15,7 +17,18 @@ export default ({ mode }: UserConfig) => {
 	}
 
 	return defineConfig({
-		plugins: [sveltekit()],
+		plugins: [
+			sveltekit(),
+			Icons({
+				compiler: 'svelte',
+				autoInstall: true
+			})
+		],
+		resolve: {
+			alias: {
+				$lib: path.resolve('./src/lib')
+			}
+		},
 		...dev
 	});
 };

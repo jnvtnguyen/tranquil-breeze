@@ -8,18 +8,19 @@ pub struct Model {
     #[serde(skip_deserializing)]
     pub id: i32,
     #[sea_orm(column_name = "name")]
+    #[sea_orm(unique)]
     pub name: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::user::Entity")]
-    User,
+    #[sea_orm(has_many = "super::workspace_user::Entity")]
+    WorkspaceUser,
 }
 
-impl Related<super::user::Entity> for Entity {
+impl Related<super::workspace_user::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::User.def()
+        Relation::WorkspaceUser.def()
     }
 }
 

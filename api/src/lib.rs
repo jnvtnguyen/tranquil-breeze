@@ -33,7 +33,7 @@ async fn start() -> anyhow::Result<()> {
     let server_url = format!("{host}:{port}");
 
     let db = Database::connect(&db_url).await.unwrap();
-    Migrator::up(&db, None).await.unwrap();
+    Migrator::up(&db, None).await?;
 
     let app = api_router()
         .fallback_service(ServeDir::new(static_files))

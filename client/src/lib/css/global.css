@@ -10,10 +10,9 @@ html {
 body {
 	margin: 0;
 	box-sizing: border-box;
-	font-family: 'Helvetica', sans-serif;
+	font-family: 'Public Sans', sans-serif;
 	font-size: 16px;
-	line-height: 1.5;
-	color: #333;
+	color: #2a292a;
 }
 
 main {

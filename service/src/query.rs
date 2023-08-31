@@ -8,7 +8,6 @@ impl Query {
         db: &DbConn,
         email: &str,
     ) -> Result<Option<user::Model>, DbErr> {
-        println!("Email {email}.");
         User::find()
             .filter(user::Column::Email.eq(email))
             .one(db)

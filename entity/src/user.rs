@@ -10,6 +10,7 @@ pub struct Model {
     #[sea_orm(column_name = "name")]
     pub name: String,
     #[sea_orm(column_name = "email")]
+    #[sea_orm(unique)]
     pub email: String,
     #[sea_orm(column_name = "password")]
     pub password: String,
@@ -17,13 +18,13 @@ pub struct Model {
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::workspace::Entity")]
-    Workspace,
+    #[sea_orm(has_many = "super::workspace_user::Entity")]
+    WorkspaceUser,
 }
 
-impl Related<super::workspace::Entity> for Entity {
+impl Related<super::workspace_user::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Workspace.def()
+        Relation::WorkspaceUser.def()
     }
 }
 

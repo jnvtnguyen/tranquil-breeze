@@ -1,6 +1,8 @@
 $spacing-base-unit: 8px;
 $spacing-0: 0;
+$spacing-half: calc($spacing-base-unit / 2);
 $spacing-1: $spacing-base-unit;
+$spacing-1-half: calc($spacing-base-unit + $spacing-half);
 $spacing-2: $spacing-base-unit * 2;
 $spacing-3: $spacing-base-unit * 3;
 $spacing-4: $spacing-base-unit * 4;
