@@ -1,0 +1,12 @@
+@use '$lib/css/variables' as *;
+
+.button {
+	margin-top: $spacing-4;
+}
+
+.link {
+	text-align: center;
+	color: $color-faint-text;
+	margin-top: $spacing-3;
+	font-size: 15px;
+}

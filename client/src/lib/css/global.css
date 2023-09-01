@@ -10,9 +10,10 @@ html {
 body {
 	margin: 0;
 	box-sizing: border-box;
-	font-family: 'Public Sans', sans-serif;
+	font-family: 'Nunito', sans-serif;
 	font-size: 16px;
 	color: #2a292a;
+	overflow: hidden;
 }
 
 main {
@@ -80,7 +81,6 @@ sup {
 img {
 	border-style: none;
 }
-
 button,
 input,
 optgroup,

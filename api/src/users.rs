@@ -7,12 +7,15 @@ use serde::{Deserialize, Serialize};
 use entity::user;
 use service::{Mutation as MutationCore, Query as QueryCore};
 
+use crate::extractor::AuthUser;
 use crate::{ApiContext, Error, Result};
 
 pub fn router() -> Router {
     Router::new()
         .route("/api/users/signup", post(create_user))
+        .route("/api/users/login", post(login_user))
         .route("/api/users/check-email", post(check_email))
+        .route("/api/user", post(get_user))
 }
 
 #[derive(Deserialize)]
@@ -28,7 +31,7 @@ struct CheckEmail {
 async fn check_email(
     ctx: Extension<ApiContext>,
     req: Json<CheckEmailBody>,
-) -> Result<Json<CheckEmail>, Error> {
+) -> Result<Json<CheckEmail>> {
     let user = QueryCore::find_user_by_email(&ctx.db, &req.email).await;
 
     let response = match user {
@@ -51,21 +54,26 @@ struct UserBody<T> {
 struct User {
     name: String,
     email: String,
+    token: String,
 }
 
 async fn create_user(
     ctx: Extension<ApiContext>,
     Json(mut req): Json<UserBody<user::Model>>,
-) -> Result<Json<UserBody<User>>, Error> {
+) -> Result<Json<UserBody<User>>> {
     let password_hash = hash_password(req.user.password).await?;
     req.user.password = password_hash;
 
     let user = MutationCore::create_user(&ctx.db, req.user).await;
-    let response: Result<Json<UserBody<User>>, Error> = match user {
+    let response: Result<Json<UserBody<User>>> = match user {
         Ok(user) => {
             let user = User {
                 name: user.name.unwrap(),
                 email: user.email.unwrap(),
+                token: AuthUser {
+                    user_id: user.id.unwrap(),
+                }
+                .to_jwt(&ctx),
             };
             Ok(Json(UserBody { user }))
         }
@@ -86,6 +94,51 @@ async fn create_user(
     response
 }
 
+#[derive(Deserialize)]
+struct LoginUser {
+    email: String,
+    password: String,
+}
+
+async fn login_user(
+    ctx: Extension<ApiContext>,
+    Json(req): Json<UserBody<LoginUser>>,
+) -> Result<Json<UserBody<User>>> {
+    let user = QueryCore::find_user_by_email(&ctx.db, &req.user.email).await?;
+
+    if user.is_some() {
+        let user = user.unwrap();
+        verify_password(req.user.password, user.password).await?;
+
+        Ok(Json(UserBody {
+            user: User {
+                name: user.name,
+                email: user.email,
+                token: AuthUser { user_id: user.id }.to_jwt(&ctx),
+            },
+        }))
+    } else {
+        Err(Error::Unauthorized)
+    }
+}
+
+async fn get_user(auth_user: AuthUser, ctx: Extension<ApiContext>) -> Result<Json<UserBody<User>>> {
+    let user = QueryCore::find_user_by_id(&ctx.db, auth_user.user_id).await?;
+
+    if user.is_some() {
+        let user = user.unwrap();
+        Ok(Json(UserBody {
+            user: User {
+                name: user.name,
+                email: user.email,
+                token: auth_user.to_jwt(&ctx),
+            },
+        }))
+    } else {
+        Err(Error::Unauthorized)
+    }
+}
+
 async fn hash_password(password: String) -> Result<String> {
     Ok(tokio::task::spawn_blocking(move || -> Result<String> {
         let salt = SaltString::generate(rand::thread_rng());
@@ -95,4 +148,19 @@ async fn hash_password(password: String) -> Result<String> {
     })
     .await
     .context("Panic in generating hash")??)
+}
+
+async fn verify_password(password: String, password_hash: String) -> Result<()> {
+    Ok(tokio::task::spawn_blocking(move || -> Result<()> {
+        let hash = PasswordHash::new(&password_hash)
+            .map_err(|e| anyhow::anyhow!("Failed to parse password hash: {}", e))?;
+
+        hash.verify_password(&[&Argon2::default()], password)
+            .map_err(|e| match e {
+                argon2::password_hash::Error::Password => Error::Unauthorized,
+                _ => anyhow::anyhow!("Failed to verify password hash: {}", e).into(),
+            })
+    })
+    .await
+    .context("Panic in verifying password")??)
 }

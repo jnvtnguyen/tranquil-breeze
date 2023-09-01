@@ -6,7 +6,7 @@ publish = false
 
 [dependencies]
 axum = {version = "0.6.20", features = ["macros"] }
-dotenvy = "0.15.7"
+dotenv = "0.15.0"
 argon2 = "0.5.1"
 anyhow = "1.0.75"
 rand = "0.8.5"
@@ -17,6 +17,14 @@ tokio = { version = "1.32.0", features = ["full"] }
 tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
 sqlx = "0.7.1"
 log = "0.4.20"
+clap = { version = "4.1.1", features = ["env"] }
+async-trait = "0.1.73"
+time = "0.3.28"
+
+jwt = "0.16.0"
+hmac = "0.12.1"
+sha2 = "0.10.7"
+
 service = { path = "../service" }
 entity = { path = "../entity" }
 migration = { path = "../migration" }

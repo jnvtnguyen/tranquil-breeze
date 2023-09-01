@@ -1,5 +1,11 @@
+import type { User } from './types';
+
 declare global {
-	namespace App {}
+	namespace App {
+		interface Locals {
+			user: User;
+		}
+	}
 }
 
 export {};

@@ -11,9 +11,7 @@ const config = {
 				'script-src': ['self']
 			}
 		},
-		adapter: adapter({
-			fallback: 'index.html'
-		})
+		adapter: adapter()
 	}
 };
 

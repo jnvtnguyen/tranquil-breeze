@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { HTMLInputTypeAttribute } from "svelte/elements";
+    import { createEventDispatcher, tick, onMount } from "svelte";
+    import { slide } from "svelte/transition";
     //@ts-ignore
     import AlertIcon from "~icons/mdi/alert";
     //@ts-ignore
     import CheckIcon from "~icons/mdi/check-circle";
-    import { slide, crossfade } from "svelte/transition";
-    import { quintOut } from "svelte/easing";
-    import { createEventDispatcher } from "svelte";
     //@ts-ignore
     import { v4 as uuid } from "uuid";
 
@@ -15,6 +14,7 @@
     export let error: string | null = null;
     export let dirty: boolean | null = null;
     export let valid: boolean | null = null;
+    export let autofocus: boolean = false;
     export let required: boolean = false;
     export let type: HTMLInputTypeAttribute = "text";
     export let name: string;
@@ -22,6 +22,7 @@
 
     let input: HTMLInputElement;
     let focused: boolean = false;
+    let autocomplete: string = "off";
 
     const dispatch = createEventDispatcher();
 
@@ -39,13 +40,12 @@
         dispatch("blur");
     }
 
-    const handleClick = () => {
-        input.focus();
-    }
-
-    const [send, recieve] = crossfade({
-        duration: 500,
-        easing: quintOut
+    onMount(async () => {
+        await tick();
+        if(autofocus) {
+            input.focus();
+        }
+        autocomplete = "on";
     });
 </script>
 
@@ -58,12 +58,13 @@
             {/if}
         </label>
     {/if}
-    <div class="input-wrapper" class:error class:focused on:click={handleClick}>
+    <div class="input-wrapper" class:error class:focused>
         <input 
             {...$$restProps}
             class="input"
             id={id}
             name={name}
+            {autocomplete}
             bind:value 
             bind:this={input}
             on:focus={handleFocus}
@@ -71,11 +72,11 @@
             use:typeAction
         />
         {#if error}
-            <span class="suffix-icon" class:error in:send={{ key: "valid" }} out:recieve={{ key: "error"}}>
+            <span class="suffix-icon" class:error>
                 <AlertIcon />
             </span>
         {:else if dirty}
-            <span class="suffix-icon" class:valid in:send={{ key: "error" }} out:recieve={{ key: "valid" }}>
+            <span class="suffix-icon" class:valid>
                 <CheckIcon />
             </span>
         {/if}
@@ -101,8 +102,7 @@
         top: 0;
         padding: 0;
         text-align: left;
-        font-size: 12px;
-        color: $color-faint-text;
+        font-size: 14px;
         cursor: text;
     }
 
@@ -110,13 +110,9 @@
         display: flex;
         align-items: center;
         margin-top: $spacing-1; 
-        height: 46px;
+        height: 48px;
         width: 100%;
         margin-bottom: 0;
-        padding-top: $spacing-2;
-        padding-bottom: $spacing-2;
-        padding-left: $spacing-1-half;
-        padding-right: $spacing-1-half;
         border: 1px solid $color-border;
         border-radius: $spacing-half;
         background-color: #efefef3d;
@@ -142,11 +138,11 @@
         border: 0;
         outline: none;
         background: transparent;
-        user-select: none;
-
+        padding: $spacing-2;
+        height: 100%;
+        width: 100%;
         &::placeholder {
             color: $color-faint-text;
-            opacity: 0.7;
         }
     }
 
@@ -166,6 +162,10 @@
     .suffix-icon {
         display: flex;
         align-items: center;
+        padding-left: 0px;
+        padding-right: $spacing-1-half;
+        padding-top: $spacing-1-half;
+        padding-bottom: $spacing-1-half;
         &.error {
             color: $color-danger;
         }

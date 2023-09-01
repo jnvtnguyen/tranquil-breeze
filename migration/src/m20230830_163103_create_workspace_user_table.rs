@@ -14,8 +14,8 @@ impl MigrationTrait for Migration {
                     .col(
                         ColumnDef::new(WorkspaceUser::Id)
                             .integer()
-                            .not_null()
                             .auto_increment()
+                            .not_null()
                             .primary_key(),
                     )
                     .col(ColumnDef::new(WorkspaceUser::UserId).integer().not_null())

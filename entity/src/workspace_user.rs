@@ -5,6 +5,7 @@ use serde::Deserialize;
 #[sea_orm(table_name = "workspace_user")]
 pub struct Model {
     #[sea_orm(primary_key)]
+    #[serde(skip_deserializing)]
     pub id: i32,
     pub user_id: i32,
     pub workspace_id: i32,
