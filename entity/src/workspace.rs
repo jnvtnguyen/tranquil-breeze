@@ -10,6 +10,8 @@ pub struct Model {
     #[sea_orm(column_name = "name")]
     #[sea_orm(unique)]
     pub name: String,
+    #[sea_orm(column_name = "image")]
+    pub image: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

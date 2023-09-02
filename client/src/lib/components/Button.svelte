@@ -1,9 +1,14 @@
 <script lang="ts">
+	import type { HTMLAnchorAttributes } from "svelte/elements";
     import { createEventDispatcher } from "svelte";
     import Spinner from "./Spinner.svelte";
 
+    interface $$Props extends HTMLAnchorAttributes {
+        text?: string;
+        loading?: boolean;
+    }
+
     export let text: string | null = null;
-    export let type: "button" | "submit" | "reset" = "button";
     export let loading: boolean = false;
 
     const dispatch = createEventDispatcher();
@@ -13,7 +18,7 @@
     }
 </script>
 
-<button {...$$restProps} class="button" {type} on:click={handleClick}>
+<button {...$$restProps} class="button" on:click={handleClick}>
     <span class="text">
         {#if loading}
             <Spinner size="16px" />

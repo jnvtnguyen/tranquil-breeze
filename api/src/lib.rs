@@ -10,6 +10,8 @@ mod config;
 mod error;
 mod extractor;
 mod users;
+mod workspaces;
+
 pub use config::Config;
 pub use error::Error;
 pub type Result<T, E = Error> = std::result::Result<T, E>;
@@ -50,7 +52,7 @@ async fn start() -> anyhow::Result<()> {
 }
 
 fn api_router() -> Router {
-    users::router()
+    users::router().merge(workspaces::router())
 }
 
 pub fn main() {

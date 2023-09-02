@@ -1,3 +1,4 @@
+use entity::user::Column;
 use sea_orm_migration::prelude::*;
 
 #[derive(DeriveMigrationName)]
@@ -24,6 +25,7 @@ impl MigrationTrait for Migration {
                             .unique_key()
                             .not_null(),
                     )
+                    .col(ColumnDef::new(Workspaces::Image).string().not_null())
                     .to_owned(),
             )
             .await
@@ -41,4 +43,5 @@ enum Workspaces {
     Table,
     Id,
     Name,
+    Image,
 }

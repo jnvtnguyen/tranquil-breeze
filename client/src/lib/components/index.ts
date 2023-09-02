@@ -4,5 +4,6 @@ import Button from './Button.svelte';
 import Spinner from './Spinner.svelte';
 import Link from './Link.svelte';
 import Alert from './Alert.svelte';
+import Sidebar from './Sidebar.svelte';
 
-export { PageMeta, Input, Button, Spinner, Link, Alert };
+export { PageMeta, Input, Button, Spinner, Link, Alert, Sidebar };

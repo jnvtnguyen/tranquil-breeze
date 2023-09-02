@@ -136,6 +136,7 @@
         flex: 1;
         font-size: 14px;
         border: 0;
+        border-radius: $spacing-half;
         outline: none;
         background: transparent;
         padding: $spacing-2;
@@ -160,12 +161,11 @@
     }
 
     .suffix-icon {
-        display: flex;
+        display: inline-flex;
+        position: absolute;
         align-items: center;
-        padding-left: 0px;
-        padding-right: $spacing-1-half;
-        padding-top: $spacing-1-half;
-        padding-bottom: $spacing-1-half;
+        right: 0;
+        margin-right: $spacing-2;
         &.error {
             color: $color-danger;
         }

@@ -2,14 +2,18 @@ $color-text: #2a292a;
 $color-inverse-text: #fff;
 $color-faint-text: #737174c2;
 
+$color-primary: #3c7a89;
+$color-primary-hover: #366e7c;
+
 $color-border: #72727e4d;
+$color-light-border: #72727e1f;
 $color-border-hover: #72727e84;
-$color-border-focus: #9893da;
+$color-light-border-hover: #72727e67;
+$color-border-focus: $color-primary;
 
 $color-danger: #b03f3f;
 $color-success: #50c76b;
 $color-white: #fff;
 $color-grey: #ccc;
 
-$color-primary: #625f63;
-$color-primary-hover: #4f4a50;
+$color-page: #eff3f6b5;

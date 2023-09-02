@@ -1,6 +1,10 @@
 use anyhow::Context;
 use argon2::{password_hash::SaltString, Argon2, PasswordHash};
-use axum::{extract::Extension, routing::post, Json, Router};
+use axum::{
+    extract::Extension,
+    routing::{get, post},
+    Json, Router,
+};
 use migration::sea_orm::SqlErr;
 use serde::{Deserialize, Serialize};
 
@@ -15,7 +19,7 @@ pub fn router() -> Router {
         .route("/api/users/signup", post(create_user))
         .route("/api/users/login", post(login_user))
         .route("/api/users/check-email", post(check_email))
-        .route("/api/user", post(get_user))
+        .route("/api/user", get(get_user))
 }
 
 #[derive(Deserialize)]
