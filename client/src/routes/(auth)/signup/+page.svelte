@@ -7,20 +7,20 @@
 	import { storeToken } from "$lib/auth";
 
 	let loading: boolean = false;
+	let emailLoading: boolean = false;
 
 	const duplicate = (): Validator => {
 		return async (value: string) => {
-			const response = await fetch("/api/users/check-email", {
+			if(emailLoading) return;
+			return await fetch("/api/users/check-email", {
 				method: "POST",
 				headers: {
 					"Content-Type": "application/json"
 				},
 				body: JSON.stringify({ email: value })
+			}).then((response) => response.json()).then(({ valid }) => {
+				return { valid, name: "duplicate" };
 			});
-
-			const { valid } = await response.json();
-
-			return { valid, name: "duplicate" };
 		}
 	}
 
@@ -85,6 +85,7 @@
 		placeholder="Email" 
 		required={true} 
 		error={message($_email, { error: "duplicate", message: "This email is already in use." })}
+		loading={emailLoading}
 		{...$_email.meta}
 		bind:value={$_email.value}
 		on:blur={() => _email.validate()}

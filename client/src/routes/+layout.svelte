@@ -1,5 +1,5 @@
 <script lang="ts">
-	import '$lib/css/global.css';
+	import '$lib/css/global.scss';
 	import { fly } from 'svelte/transition';
 	import { cubicIn, cubicOut } from 'svelte/easing';
 
@@ -25,6 +25,5 @@
 		width: 100vw;
 		height: 100vh;
 		overflow: hidden;
-        background: $color-page;
 	}
 </style>

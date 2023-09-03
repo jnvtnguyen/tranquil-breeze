@@ -18,6 +18,10 @@ export function message(
 		if (match) {
 			return `${field.title} must be at least ${match[1]} characters.`;
 		}
+		match = error.match(/^max\.(\d+)$/);
+		if (match) {
+			return `${field.title} must be cannot exceed ${match[1]} characters.`;
+		}
 		if (extended && error === extended.error) {
 			return extended.message;
 		}

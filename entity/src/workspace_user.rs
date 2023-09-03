@@ -9,6 +9,7 @@ pub struct Model {
     pub id: i32,
     pub user_id: i32,
     pub workspace_id: i32,
+    pub owner: bool,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

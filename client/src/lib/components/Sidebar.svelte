@@ -1,9 +1,20 @@
 <script lang="ts">
-	import Workspace from "./Sidebar/Workspace.svelte";
+    import type { Workspace } from "$lib/types";
+    //@ts-ignore
+    import HomeIcon from "~icons/bytesize/home";
+    import Link from "./Sidebar/Link.svelte";
+
+    export let workspace: Workspace;
+
+    const link = (href: string) => {
+        return `/workspaces/${workspace.slug}${href}`;
+    }
 </script>
 
 <div class="sidebar">
-    <Workspace />
+    <Link title="Projects Home" href={link("")}>
+        <HomeIcon slot="icon" />
+    </Link>
 </div>
 
 <style lang="scss">
@@ -11,10 +22,12 @@
 
     .sidebar {
         display: flex;
-        padding: $spacing-4;
-        width: 320px;
+        flex-direction: column;
+        width: 240px;
         height: 100%;
-        background: $color-white;
-        border-right: 1px solid $color-light-border;
+        background: $color-sidebar;
+        box-shadow: rgba(50, 50, 93, 0.25) 0px 6px 12px -2px, rgba(0, 0, 0, 0.3) 0px 3px 7px -3px;
+        z-index: 1;
+        padding-top: $spacing-4;
     }
 </style>

@@ -8,6 +8,7 @@
     import CheckIcon from "~icons/mdi/check-circle";
     //@ts-ignore
     import { v4 as uuid } from "uuid";
+    import Spinner from "./Spinner.svelte";
 
     export let value: string | null = null;
     export let label: string | null = null;
@@ -16,13 +17,15 @@
     export let valid: boolean | null = null;
     export let autofocus: boolean = false;
     export let required: boolean = false;
+    export let loading: boolean = false;
     export let type: HTMLInputTypeAttribute = "text";
     export let name: string;
     export let id: string = uuid();
+    export let autocomplete: string = "on";
+    export let max: number | null = null;
 
     let input: HTMLInputElement;
     let focused: boolean = false;
-    let autocomplete: string = "off";
 
     const dispatch = createEventDispatcher();
 
@@ -41,22 +44,31 @@
     }
 
     onMount(async () => {
+        const _autocomplete = autocomplete;
+        autocomplete = "off";
         await tick();
         if(autofocus) {
             input.focus();
         }
-        autocomplete = "on";
+        autocomplete = _autocomplete;
     });
 </script>
 
 <div class="wrapper">
     {#if label}
-        <label class="label" for={id}>
-            {label}
-            {#if required}
-                <span class="required">*</span>
+        <div class="head">
+            <label class="label" for={id}>
+                {label}
+                {#if required}
+                    <span class="required">*</span>
+                {/if}
+            </label>
+            {#if max}
+                <div class="sub">
+                    <span class="text">{max - value.length} characters remaining.</span>
+                </div>
             {/if}
-        </label>
+        </div>
     {/if}
     <div class="input-wrapper" class:error class:focused>
         <input 
@@ -64,6 +76,7 @@
             class="input"
             id={id}
             name={name}
+            maxlength={max}
             {autocomplete}
             bind:value 
             bind:this={input}
@@ -71,7 +84,11 @@
             on:blur={handleBlur}
             use:typeAction
         />
-        {#if error}
+        {#if loading}
+            <span class="suffix-icon">
+                <Spinner />
+            </span>
+        {:else if error}
             <span class="suffix-icon" class:error>
                 <AlertIcon />
             </span>
@@ -142,8 +159,13 @@
         padding: $spacing-2;
         height: 100%;
         width: 100%;
+
         &::placeholder {
             color: $color-faint-text;
+        }
+
+        &:disabled {
+            cursor: not-allowed;
         }
     }
 
@@ -172,6 +194,17 @@
 
         &.valid {
             color: $color-success;
+        }
+    }
+
+    .head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        .sub {
+            font-size: 14px;
+            color: $color-faint-text;
         }
     }
 </style>

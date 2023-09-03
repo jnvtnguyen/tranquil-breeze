@@ -6,10 +6,12 @@
     interface $$Props extends HTMLAnchorAttributes {
         text?: string;
         loading?: boolean;
+        disabled?: boolean;
     }
 
     export let text: string | null = null;
     export let loading: boolean = false;
+    export let disabled: boolean = false;
 
     const dispatch = createEventDispatcher();
 
@@ -18,7 +20,7 @@
     }
 </script>
 
-<button {...$$restProps} class="button" on:click={handleClick}>
+<button {...$$restProps} class="button" {disabled} on:click={handleClick}>
     <span class="text">
         {#if loading}
             <Spinner size="16px" />

@@ -1,4 +1,4 @@
-use ::entity::user;
+use ::entity::{user, workspace, workspace_user};
 use sea_orm::*;
 
 pub struct Mutation;
@@ -13,5 +13,31 @@ impl Mutation {
         }
         .save(db)
         .await
+    }
+
+    pub async fn create_workspace(
+        db: &DbConn,
+        wrkspace: workspace::Model,
+        user_id: i32,
+    ) -> Result<workspace::ActiveModel, DbErr> {
+        let workspace = workspace::ActiveModel {
+            name: Set(wrkspace.name.to_owned()),
+            image: Set(wrkspace.image.to_owned()),
+            slug: Set(wrkspace.slug.to_owned()),
+            ..Default::default()
+        }
+        .save(db)
+        .await?;
+
+        workspace_user::ActiveModel {
+            user_id: Set(user_id),
+            workspace_id: Set(workspace.id.to_owned().unwrap()),
+            owner: Set(true),
+            ..Default::default()
+        }
+        .save(db)
+        .await?;
+
+        Ok(workspace)
     }
 }

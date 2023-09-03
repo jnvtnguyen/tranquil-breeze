@@ -5,11 +5,10 @@ use axum::{
     routing::{get, post},
     Json, Router,
 };
-use migration::sea_orm::SqlErr;
 use serde::{Deserialize, Serialize};
 
 use entity::user;
-use service::{Mutation as MutationCore, Query as QueryCore};
+use service::{sea_orm::SqlErr, Mutation as MutationCore, Query as QueryCore};
 
 use crate::extractor::AuthUser;
 use crate::{ApiContext, Error, Result};
@@ -34,7 +33,7 @@ struct CheckEmail {
 
 async fn check_email(
     ctx: Extension<ApiContext>,
-    req: Json<CheckEmailBody>,
+    Json(req): Json<CheckEmailBody>,
 ) -> Result<Json<CheckEmail>> {
     let user = QueryCore::find_user_by_email(&ctx.db, &req.email).await;
 
@@ -85,7 +84,7 @@ async fn create_user(
             if let Some(err) = e.sql_err() {
                 match err {
                     SqlErr::UniqueConstraintViolation(_) => {
-                        Err(Error::unprocessable_entity([("email", "email taken")]))
+                        Err(Error::unprocessable_entity([("", "")]))
                     }
                     _ => Err(Error::SeaOrm(e)),
                 }

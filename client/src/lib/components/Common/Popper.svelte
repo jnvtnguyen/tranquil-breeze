@@ -138,8 +138,6 @@
             ['mouseleave', hideHandler, !clickable]
         ];
 
-        console.log(triggeredBy)
-
         if (triggeredBy) triggerElements = [...document.querySelectorAll<HTMLElement>(triggeredBy)];
         else triggerElements = contentElement.previousElementSibling ? [contentElement.previousElementSibling as HTMLElement] : [];
 
@@ -148,7 +146,6 @@
         }
 
         triggerElements.forEach((element: HTMLElement) => {
-            console.log(triggerElements);
             if (element.tabIndex < 0) element.tabIndex = 0; 
                 for (const [name, handler, cond] of events) if (cond) element.addEventListener(name, handler);
             });

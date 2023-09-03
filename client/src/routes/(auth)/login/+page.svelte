@@ -1,8 +1,7 @@
 <script lang="ts">
 	import { fade, slide } from "svelte/transition";
 	import { goto } from "$app/navigation";
-	import { PageMeta, Input, Button, Link } from '$lib/components/';
-	import Alert from '$lib/components/Alert.svelte';
+	import { PageMeta, Input, Button, Link, Alert } from '$lib/components/';
 	import { form, field, message } from '$lib/form/';
 	import { required } from '$lib/form/validators/';
 	import { storeToken } from "$lib/auth";

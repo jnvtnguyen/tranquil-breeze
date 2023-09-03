@@ -8,10 +8,7 @@ export default ({ mode }: UserConfig) => {
 	if (mode === 'development') {
 		dev = {
 			server: {
-				port: 3000,
-				proxy: {
-					'/api': 'http://localhost:5004'
-				}
+				port: 3000
 			}
 		};
 	}

@@ -1,3 +1,7 @@
+@use 'variables' as *;
+@import url('https://fonts.googleapis.com/css?family=Titillium Web:300,400,500,700,900');
+@import url('https://fonts.googleapis.com/css?family=Merriweather');
+
 * {
 	box-sizing: border-box;
 }
@@ -10,10 +14,11 @@ html {
 body {
 	margin: 0;
 	box-sizing: border-box;
-	font-family: 'Roboto', sans-serif;
+	font-family: $font-family;
 	font-size: 16px;
 	color: #2a292a;
 	overflow: hidden;
+	background-color: $color-page;
 }
 
 main {
@@ -23,15 +28,6 @@ main {
 h1 {
 	font-size: 2em;
 	margin: 0.67em 0;
-}
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-	font-family: 'Merriweather', sans-serif;
 }
 
 hr {

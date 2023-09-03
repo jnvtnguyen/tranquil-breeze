@@ -1,19 +1,22 @@
-$color-text: #2a292a;
+$color-text: #172b4d;
 $color-inverse-text: #fff;
-$color-faint-text: #737174c2;
+$color-faint-text: #172b4da1;
 
-$color-primary: #3c7a89;
-$color-primary-hover: #366e7c;
+$color-primary: #5783db;
+$color-primary-hover: #4e6cd2;
 
 $color-border: #72727e4d;
 $color-light-border: #72727e1f;
 $color-border-hover: #72727e84;
 $color-light-border-hover: #72727e67;
-$color-border-focus: $color-primary;
+$color-border-focus: #5084d7;
 
 $color-danger: #b03f3f;
 $color-success: #50c76b;
 $color-white: #fff;
 $color-grey: #ccc;
+$color-light-grey: #c2c5c955;
+$color-sidebar: #f4f5f7;
+$color-backdrop: #111827;
 
-$color-page: #eff3f6b5;
+$color-page: $color-white;
