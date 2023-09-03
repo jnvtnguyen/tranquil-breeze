@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { fly } from "svelte/transition";
 	import { field, form, message } from "$lib/form";
 	import { min, required } from "$lib/form/validators";
     import { Modal, Input, Button } from "$lib/components";
@@ -64,14 +65,14 @@
     $: fullSlug = "http://localhost:3000/workspaces/" + slug;
 </script>
 
-<Modal title="Create a Workspace" size="sm" bind:open={open}>
+<Modal title="Create a Workspace" size="sm" transition={fly} params={{ duration: 300, y: 5 }} bind:open={open}>
     <form>
         <Input
             name="name"
             label="Name"
             placeholder="Name"
             required={true}
-            error={message($_name, { error: "duplicate", message: "This name and slug is already taken."})}
+            error={message($_name, { error: "duplicate", message: "This name  slug is already taken."})}
             {...$_name.meta}
             autocomplete="off"
             autofocus

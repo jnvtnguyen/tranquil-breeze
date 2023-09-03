@@ -31,7 +31,7 @@
     .breadcrumbs {
         display: flex;
         align-items: center;
-        background: $color-sidebar;
+        background: $color-light-grey;
         margin-left: $spacing-2;
         min-height: 40px;
         border-radius: 30px;
@@ -46,7 +46,7 @@
         justify-content: space-between;
         width: 60px;
         border-radius: 30px;
-        background: $color-primary;
+        background: $color-sidebar;
         padding: $spacing-1;
         color: $color-faint-text;
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 1px 3px 1px;

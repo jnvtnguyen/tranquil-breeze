@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Workspace } from "$lib/types";
     import { navigating, page } from "$app/stores";
+    import { Svroller } from "svrollbar";
     //@ts-ignore
     import MagnifyIcon from "~icons/mdi/magnify";
     //@ts-ignore
@@ -12,6 +13,9 @@
 
     export let workspace: Workspace;
 
+    let workspaceOpen: boolean = false;
+    let createWorkspaceOpen: boolean = false;
+
     const fetchWorkspaces = async () => {
         return await fetch("/api/workspaces")
             .then((response) => response.json())
@@ -20,12 +24,11 @@
             })
     }
 
-    const handleOpen = () => {
-        modal = true;
+    const handleModalOpen = () => {
+        createWorkspaceOpen = true;
+        workspaceOpen = false;
     }
 
-    let openWorkspace: boolean = false;
-    let modal: boolean = false;
 </script>
 
 <div>
@@ -36,7 +39,7 @@
         </div>
         <div class="icon">
             {#if !$navigating}
-                {#if openWorkspace}
+                {#if workspaceOpen}
                     <MenuUpIcon />
                 {:else}
                     <MenuDownIcon />
@@ -45,7 +48,7 @@
         </div>
     </div>
 
-    <Dropdown bind:open={openWorkspace} offset={4} placement="bottom-start">
+    <Dropdown bind:open={workspaceOpen} offset={4} placement="bottom-start">
         <div class="dropdown">
             <div class="search">
                 <div class="icon">
@@ -60,25 +63,29 @@
                         <Spinner />
                     </div>
                 {:then workspaces}
-                    {#each workspaces as workspace}
-                        <a class="list-workspace" class:active={$page.url.pathname.includes(workspace.slug)}  href="/workspaces/{workspace.slug}">
-                            <img class="image" src="https://picsum.photos/200/200" />
-                            <div class="list-workspace-information">
-                                <span class="name">{workspace.name}</span>
-                            </div>
-                        </a>
-                    {/each}
+                    <Svroller width="100%" height="320px">
+                        <div class="inner-workspaces">
+                            {#each workspaces as workspace, i (workspace)}
+                                <a class="list-workspace" class:active={$page.url.pathname === `/workspaces/${workspace.slug}`}  href="/workspaces/{workspace.slug}">
+                                    <img class="image" src="https://picsum.photos/200/200" />
+                                    <div class="list-workspace-information">
+                                        <span class="name">{workspace.name}</span>
+                                    </div>
+                                </a>
+                            {/each}
+                        </div>
+                    </Svroller>
                 {:catch error}
                 {/await}
             </div>
 
             <div class="workspaces-actions">
-                <span class="text" on:click={handleOpen}>Create New Workspace</span>
+                <span class="text" on:click={handleModalOpen}>Create New Workspace</span>
             </div>
 
-            <WorkspaceModal bind:open={modal} />
         </div>
     </Dropdown>
+    <WorkspaceModal bind:open={createWorkspaceOpen} />
 </div>
 
 <style lang="scss">
@@ -88,12 +95,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        background: $color-primary;
+        background: $color-sidebar;
         padding: $spacing-1;
         border-radius: $spacing-1;
         cursor: pointer;
         width: 208px;
-        color: $color-inverse-text;
+        color: $color-text;
+        user-select: none;
         box-shadow: rgba(60, 64, 67, 0.3) 0px 1px 2px 0px, rgba(60, 64, 67, 0.15) 0px 2px 6px 2px;
 
         .content {
@@ -139,7 +147,6 @@
         .search {
             display: flex;
             align-items: center;
-            border-bottom: 1px solid $color-light-border;
             color: $color-faint-text;
 
             .input {
@@ -166,7 +173,11 @@
         .workspaces-list {
             display: flex;
             flex-direction: column;
-            padding-left: 0;
+            border-top: 1px solid $color-border;
+            border-bottom: 1px solid $color-border;
+            .inner-workspaces {
+                padding-right: $spacing-2;
+            }
 
             .list-workspace {
                 display: flex;
@@ -176,15 +187,16 @@
                 padding-left: $spacing-2;
                 width: 100%;
                 cursor: pointer;
-                border-top: 1px solid $color-white;
-                border-bottom: 1px solid $color-white;
+                border: 1px solid $color-white;
+                border-left: 0;
+                border-left: 0;
                 text-decoration: none;
                 color: $color-text;
-
+                border-top-right-radius: 20px;
+                border-bottom-right-radius: 20px;
                 &.active {
                     background: $color-primary;
-                    border-top: 1px solid $color-border;
-                    border-bottom: 1px solid $color-border;
+                    border: 1px solid $color-primary-border;
                     color: $color-inverse-text;
                 }
 
@@ -201,9 +213,8 @@
 
 
                 &:hover:not(.active) {
-                    background: $color-light-grey;
-                    border-top: 1px solid $color-border;
-                    border-bottom: 1px solid $color-border;
+                    background: $color-sidebar;
+                    border-color: $color-border;
                 }
             }
             .error {
@@ -212,7 +223,6 @@
         }
 
         .workspaces-actions {
-            border-top: 1px solid $color-light-border;
             padding: $spacing-2;
             font-size: 14px;
             

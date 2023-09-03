@@ -5,6 +5,8 @@
 <script lang="ts">
 	import type { SizeType } from "./types";
 	import { createEventDispatcher, type ComponentProps } from "svelte";
+    //@ts-ignore
+    import CloseIcon from "~icons/mdi/close";
     import focusTrap from "./util/FocusTrap";
     import Frame from "./Frame.svelte";
 
@@ -23,7 +25,7 @@
     export let placement: ModalPlacementType = "center";
     export let autoclose: boolean = false;
     export let outsideclose: boolean = false;
-    export let dismissible: boolean = false;
+    export let dismissible: boolean = true;
     export let size: SizeType = "md";
 
     const getPlacementStyles = () => {
@@ -101,7 +103,7 @@
     <!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
     <div on:keydown={handleKeys} on:wheel|preventDefault|nonpassive use:prepareFocus use:focusTrap on:click={onAutoClose} class="modal" tabindex="-1" aria-modal="true" role="dialog" style={getPlacementStyles()}>
         <div class="container" style={getSizeStyles()}>
-            <Frame>
+            <Frame {...$$restProps}>
                 {#if $$slots.header || title}
                     <div class="header">
                         <slot name="header">
@@ -109,6 +111,11 @@
                                 {title}
                             </h3>
                         </slot>
+                        {#if dismissible}
+                            <button class="close" on:click={hide}>
+                                <CloseIcon  />
+                            </button>
+                        {/if}
                     </div>
                 {/if}
                 <div class="body">
@@ -158,11 +165,27 @@
     }
 
     .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         color: $color-text;
         padding: $spacing-2;
         padding-top: $spacing-half;
         padding-bottom: $spacing-half;
         border-bottom: 1px solid $color-border;
+        
+        .close {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 0;
+            background: transparent;
+            padding: 0;
+            margin: 0;
+            cursor: pointer;
+            color: $color-faint-text;
+            font-size: 18px;
+        }
     }
 
     .body {
