@@ -43,6 +43,11 @@ impl MigrationTrait for Migration {
                             .to(entity::workspace::Entity, entity::workspace::Column::Id),
                     )
                     .col(ColumnDef::new(WorkspaceUser::Owner).boolean().not_null())
+                    .col(
+                        ColumnDef::new(WorkspaceUser::Activated)
+                            .boolean()
+                            .not_null(),
+                    )
                     .to_owned(),
             )
             .await
@@ -62,4 +67,5 @@ enum WorkspaceUser {
     UserId,
     WorkspaceId,
     Owner,
+    Activated,
 }

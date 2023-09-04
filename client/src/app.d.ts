@@ -1,9 +1,10 @@
-import type { User } from './lib/types';
+import type { User, Workspace } from '$lib/types';
 
 declare global {
 	namespace App {
 		interface Locals {
 			user: User;
+			workspace: Workspace;
 		}
 	}
 }

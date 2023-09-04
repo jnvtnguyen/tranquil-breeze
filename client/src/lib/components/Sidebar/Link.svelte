@@ -20,32 +20,48 @@
     @use "$lib/css/variables" as *;
 
     .link {
+        position: relative;
         display: flex;
         align-items: center;
         color: $color-faint-text;
         text-decoration: none;
         padding: $spacing-1-half;
+        padding-top: $spacing-1;
+        padding-bottom: $spacing-1;
+        border-left: 2px solid transparent;
+        transition: all .2s;
+
+        &:not(:first-child) {
+            margin-top: $spacing-half;
+        }
+
+        &:hover:not(.active) {
+            background: $color-light-grey;
+            border-left-color: $color-primary;
+        }
 
         .icon {
             display: flex;
+            position: relative;
             align-items: center;
             padding: $spacing-half;
+            color: $color-faint-text;
             border-radius: 25%;
-            color: $color-inverse-text;
         }
 
         .title {
             margin-left: $spacing-1-half;
+            z-index: 1000;
         }
 
         &.active {
-            background: $color-light-grey;
             border-left: 2px solid $color-primary;
+            background: $color-light-grey;
 
             .icon {
                 background: $color-primary;
+                color: $color-inverse-text;
             }
         }
-
     }
 </style>

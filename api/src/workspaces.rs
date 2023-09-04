@@ -1,21 +1,34 @@
 use axum::{
     extract::{Extension, Path},
+    http::Request,
+    middleware::{self, Next},
+    response::Response,
     routing::{get, post},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
 
 use entity::workspace;
-use service::{sea_orm::SqlErr, Mutation as MutationCore, Query as QueryCore};
+use service::{
+    sea_orm::SqlErr, CreateWorkspace, Mutation as MutationCore, Query as QueryCore,
+    WorkspaceUserCombined,
+};
 
 use crate::{extractor::AuthUser, ApiContext, Error, Result};
 
+fn workspace_router() -> Router {
+    Router::new()
+        .route("/api/workspaces/:workspace_slug", get(workspace))
+        .route("/api/workspaces/:workspace_slug/users", get(users))
+        .route_layer(middleware::from_fn(workspace_middleware))
+}
+
 pub fn router() -> Router {
     Router::new()
-        .route("/api/workspaces/create", post(create_workspace))
         .route("/api/workspaces", get(workspaces))
-        .route("/api/workspaces/:workspace_slug", get(workspace))
+        .route("/api/workspaces/create", post(create_workspace))
         .route("/api/workspaces/check-slug", post(check_slug))
+        .merge(workspace_router())
 }
 
 #[derive(Serialize, Deserialize)]
@@ -26,22 +39,32 @@ struct WorkspaceBody<T> {
 #[derive(Serialize, Deserialize)]
 struct Workspace {
     name: String,
-    image: String,
+    slug: String,
+}
+
+#[derive(Deserialize)]
+struct CreateWorkspaceRequest {
+    name: String,
     slug: String,
 }
 
 async fn create_workspace(
     ctx: Extension<ApiContext>,
     auth_user: AuthUser,
-    Json(req): Json<WorkspaceBody<workspace::Model>>,
+    Json(req): Json<WorkspaceBody<CreateWorkspaceRequest>>,
 ) -> Result<Json<WorkspaceBody<Workspace>>> {
-    let workspace = MutationCore::create_workspace(&ctx.db, req.workspace, auth_user.user_id).await;
+    let workspace: CreateWorkspace = CreateWorkspace {
+        name: req.workspace.name.to_owned(),
+        slug: req.workspace.slug.to_owned(),
+        image: "".to_owned(),
+    };
+
+    let workspace = MutationCore::create_workspace(&ctx.db, workspace, auth_user.user_id).await;
 
     let response = match workspace {
         Ok(workspace) => {
             let workspace = Workspace {
                 name: workspace.name.unwrap(),
-                image: workspace.image.unwrap(),
                 slug: workspace.slug.unwrap(),
             };
             Ok(Json(WorkspaceBody { workspace }))
@@ -63,20 +86,21 @@ async fn create_workspace(
     response
 }
 
-async fn workspace(
+async fn workspace_middleware<B>(
     ctx: Extension<ApiContext>,
     auth_user: AuthUser,
     Path(workspace_slug): Path<String>,
-) -> Result<Json<WorkspaceBody<workspace::Model>>> {
+    mut req: Request<B>,
+    next: Next<B>,
+) -> Result<Response> {
     let workspace =
         QueryCore::find_workspace_by_user_slug(&ctx.db, &workspace_slug, auth_user.user_id).await;
 
     let response = match workspace {
         Ok(workspace) => {
             if workspace.is_some() {
-                Ok(Json(WorkspaceBody {
-                    workspace: workspace.unwrap(),
-                }))
+                req.extensions_mut().insert(workspace.unwrap());
+                Ok(next.run(req).await)
             } else {
                 Err(Error::NotFound)
             }
@@ -85,6 +109,12 @@ async fn workspace(
     };
 
     response
+}
+
+async fn workspace(
+    Extension(workspace): Extension<workspace::Model>,
+) -> Result<Json<WorkspaceBody<workspace::Model>>> {
+    Ok(Json(WorkspaceBody { workspace }))
 }
 
 #[derive(Deserialize)]
@@ -127,4 +157,18 @@ async fn workspaces(
     let workspaces = QueryCore::find_workspaces_by_user_id(&ctx.db, auth_user.user_id).await?;
 
     Ok(Json(WorkspacesBody { workspaces }))
+}
+
+#[derive(Serialize)]
+struct UsersBody<T> {
+    users: Vec<T>,
+}
+
+async fn users(
+    ctx: Extension<ApiContext>,
+    Extension(workspace): Extension<workspace::Model>,
+) -> Result<Json<UsersBody<WorkspaceUserCombined>>> {
+    let users = QueryCore::find_users_by_workspace_id(&ctx.db, workspace.id).await?;
+
+    Ok(Json(UsersBody { users }))
 }

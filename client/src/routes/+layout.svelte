@@ -1,20 +1,25 @@
 <script lang="ts">
+	import { onNavigate } from '$app/navigation';
 	import '$lib/css/global.scss';
-	import { fly } from 'svelte/transition';
-	import { cubicIn, cubicOut } from 'svelte/easing';
 
 	export let data;
 
-	const duration = 200;
-	const delay = duration + 100;
-	const y = 10;
+	onNavigate((navigation) => {
+		//@ts-ignore
+		if(!document.startViewTransition) return;
 
-	const flyIn = { easing: cubicOut, y, duration, delay };
-	const flyOut = { easing: cubicIn, y: -1, duration };
+		return new Promise((resolve) => {
+			//@ts-ignore
+			document.startViewTransition(async () => {
+				resolve();
+				await navigation.complete;
+			});
+		})
+	});
 </script>
 
 {#key data.pathname}
-	<div class="page" in:fly={flyIn} out:fly={flyOut}>
+	<div class="page">
 		<slot />
 	</div>
 {/key}
@@ -25,5 +30,6 @@
 		width: 100vw;
 		height: 100vh;
 		overflow: hidden;
+		view-transition-name: page;
 	}
 </style>

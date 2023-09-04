@@ -1,34 +1,26 @@
 <script lang="ts">
 	import type { Workspace } from "$lib/types";
-    import { navigating, page } from "$app/stores";
-    import { Svroller } from "svrollbar";
+    import { navigating } from "$app/stores";
     //@ts-ignore
     import MagnifyIcon from "~icons/mdi/magnify";
     //@ts-ignore
     import MenuDownIcon from "~icons/mdi/menu-down";
     //@ts-ignore
     import MenuUpIcon from "~icons/mdi/menu-up";
-    import { Dropdown, Spinner } from "$lib/components";
+	import WorkspaceList from "./WorkspaceList.svelte";
 	import WorkspaceModal from "./WorkspaceModal.svelte";
+    import { Dropdown } from "$lib/components";
+	import { fly } from "svelte/transition";
 
     export let workspace: Workspace;
 
     let workspaceOpen: boolean = false;
     let createWorkspaceOpen: boolean = false;
 
-    const fetchWorkspaces = async () => {
-        return await fetch("/api/workspaces")
-            .then((response) => response.json())
-            .then((data) => {
-                return data.workspaces;
-            })
-    }
-
     const handleModalOpen = () => {
         createWorkspaceOpen = true;
         workspaceOpen = false;
     }
-
 </script>
 
 <div>
@@ -44,11 +36,13 @@
                 {:else}
                     <MenuDownIcon />
                 {/if}
+            {:else}
+                <MenuDownIcon />
             {/if}
         </div>
     </div>
 
-    <Dropdown bind:open={workspaceOpen} offset={4} placement="bottom-start">
+    <Dropdown bind:open={workspaceOpen} offset={4} placement="bottom-start" transition={fly} params={{ duration: 300, y: 5 }}>
         <div class="dropdown">
             <div class="search">
                 <div class="icon">
@@ -57,27 +51,7 @@
                 <input autocomplete="off" name="search" class="input" placeholder="Search for a workspace" />
             </div>
 
-            <div class="workspaces-list">
-                {#await fetchWorkspaces()}
-                    <div class="loading">
-                        <Spinner />
-                    </div>
-                {:then workspaces}
-                    <Svroller width="100%" height="320px">
-                        <div class="inner-workspaces">
-                            {#each workspaces as workspace, i (workspace)}
-                                <a class="list-workspace" class:active={$page.url.pathname === `/workspaces/${workspace.slug}`}  href="/workspaces/{workspace.slug}">
-                                    <img class="image" src="https://picsum.photos/200/200" />
-                                    <div class="list-workspace-information">
-                                        <span class="name">{workspace.name}</span>
-                                    </div>
-                                </a>
-                            {/each}
-                        </div>
-                    </Svroller>
-                {:catch error}
-                {/await}
-            </div>
+            <WorkspaceList />
 
             <div class="workspaces-actions">
                 <span class="text" on:click={handleModalOpen}>Create New Workspace</span>
@@ -167,58 +141,6 @@
                 align-items: center;
                 font-size: 18px;
                 padding-left: $spacing-1;
-            }
-        }
-
-        .workspaces-list {
-            display: flex;
-            flex-direction: column;
-            border-top: 1px solid $color-border;
-            border-bottom: 1px solid $color-border;
-            .inner-workspaces {
-                padding-right: $spacing-2;
-            }
-
-            .list-workspace {
-                display: flex;
-                align-items: center;
-                padding-top: $spacing-1;
-                padding-bottom: $spacing-1;
-                padding-left: $spacing-2;
-                width: 100%;
-                cursor: pointer;
-                border: 1px solid $color-white;
-                border-left: 0;
-                border-left: 0;
-                text-decoration: none;
-                color: $color-text;
-                border-top-right-radius: 20px;
-                border-bottom-right-radius: 20px;
-                &.active {
-                    background: $color-primary;
-                    border: 1px solid $color-primary-border;
-                    color: $color-inverse-text;
-                }
-
-                .image {
-                    width: 35px;
-                    height: 35px;
-                    border-radius: 25%;
-                }
-
-                .name {
-                    font-size: 15px;
-                    padding-left: $spacing-1-half;
-                }
-
-
-                &:hover:not(.active) {
-                    background: $color-sidebar;
-                    border-color: $color-border;
-                }
-            }
-            .error {
-                padding-left: $spacing-2;
             }
         }
 

@@ -82,12 +82,11 @@ export function field<T>(
 	partial: Partial<FieldOptions> = {}
 ) {
 	const options: FieldOptions = {
-		...partial,
 		valid: true,
 		validateOnChange: true,
-		validateOnBlur: false,
 		stopAtFirstError: true,
-		isOptional: false
+		isOptional: false,
+		...partial
 	};
 
 	const field: Field<T> = {

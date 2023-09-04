@@ -6,12 +6,18 @@
 	import { required, email, min } from '$lib/form/validators/';
 	import { storeToken } from "$lib/auth";
 
-	let loading: boolean = false;
-	let emailLoading: boolean = false;
+	let loading: {
+		form: boolean,
+		email: boolean
+	} = {
+		form: false,
+		email: false
+	};
 
 	const duplicate = (): Validator => {
 		return async (value: string) => {
-			if(emailLoading) return;
+			if(loading.email) return;
+			loading.email = true;
 			return await fetch("/api/users/check-email", {
 				method: "POST",
 				headers: {
@@ -19,6 +25,7 @@
 				},
 				body: JSON.stringify({ email: value })
 			}).then((response) => response.json()).then(({ valid }) => {
+				loading.email = false;
 				return { valid, name: "duplicate" };
 			});
 		}
@@ -35,29 +42,24 @@
 		await _form.validate();
 
 		if($_form.valid) {
-			try {
-				loading = true;
-				let response = await fetch("/api/users/signup", {
-					method: "POST",
-					headers: {
-						"Content-Type": "application/json"
-					},
-					body: JSON.stringify({
-						user: $_form.summary
-					})
-				});
+			loading.form = true;
+			let response = await fetch("/api/users/signup", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/json"
+				},
+				body: JSON.stringify({
+					user: $_form.summary
+				})
+			});
 
-				loading = false
+			loading.form = false;
 
-				if(response?.ok) {
-					const data = await response.json();
-					const token = data.user.token;
-					storeToken(token);
-					goto("/workspaces");
-				}
-			}
-			catch(e) {
-				console.error(e);
+			if(response?.ok) {
+				const data = await response.json();
+				const token = data.user.token;
+				storeToken(token);
+				goto("/workspaces");
 			}
 		}
 	}
@@ -85,7 +87,7 @@
 		placeholder="Email" 
 		required={true} 
 		error={message($_email, { error: "duplicate", message: "This email is already in use." })}
-		loading={emailLoading}
+		loading={loading.email}
 		{...$_email.meta}
 		bind:value={$_email.value}
 		on:blur={() => _email.validate()}
@@ -104,7 +106,7 @@
 
 
 	<div class="button">
-		<Button type="button" text="Sign up" disabled={loading} loading={loading} on:click={handleSubmit} />
+		<Button type="button" text="Sign up" disabled={loading.form} loading={loading.form} on:click={handleSubmit} />
 	</div>
 
 	<p class="link">Already have an account? <Link href="/login" text="Log in" /></p>

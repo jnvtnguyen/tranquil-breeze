@@ -1,7 +1,6 @@
 export type FieldOptions = {
 	valid: boolean;
 	validateOnChange: boolean;
-	validateOnBlur: boolean;
 	stopAtFirstError: boolean;
 	isOptional: boolean;
 };

@@ -43,6 +43,9 @@
 				if (response.status === 401) {
 					error = "The email or password you entered is incorrect.";
 				}
+				else {
+					error = "An error occurred. Please try again.";
+				}
 			}
 		}
 	}

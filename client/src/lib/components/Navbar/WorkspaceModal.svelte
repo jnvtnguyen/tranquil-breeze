@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { fly } from "svelte/transition";
+    import { scale } from "svelte/transition";
 	import { field, form, message } from "$lib/form";
 	import { min, required } from "$lib/form/validators";
     import { Modal, Input, Button } from "$lib/components";
@@ -7,9 +7,14 @@
 
     export let open: boolean = false;
 
-    let loading: boolean = false;
+    let loading: {
+        form: boolean,
+        slug: boolean
+    } = {
+        form: false,
+        slug: false
+    }
     let slug: string = "";
-    let slugLoading: boolean = false;
 
     const format = (value: string) => {
         return value.replace(/\s+/g, '-').replace(/'/g, '').toLowerCase();
@@ -17,7 +22,8 @@
 
     const duplicate = () => {
         return async (value: string) => {
-            if(slugLoading) return;
+            if(loading.slug) return;
+            loading.slug = true;
             return await fetch("/api/workspaces/check-slug", {
                 method: "POST",
                 headers: {
@@ -25,6 +31,7 @@
                 },
                 body: JSON.stringify({ slug: format(value) })
             }).then((response) => response.json()).then(({ valid }) => {
+                loading.slug = false;
                 return { valid, name: "duplicate" };
             });
         }
@@ -38,34 +45,29 @@
         await _form.validate();
 
         if($_form.valid) {
-            try {
-                loading = true;
-                let response = await fetch("/api/workspaces/create", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ workspace: { name: $_name.value, slug, image: "" } })
-                });
+            loading.form = true;
+            let response = await fetch("/api/workspaces/create", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ workspace: { name: $_name.value, slug } })
+            });
 
-                loading = false;
+            loading.form = false;
 
-                if(response?.ok) {
-                    open = false; 
-                    goto(`/workspaces/${slug}`);
-                }
-            }
-            catch(e) {
-                console.error(e);
+            if(response?.ok) {
+                open = false; 
+                goto(`/workspaces/${slug}`);
             }
         }
     }
 
     $: slug = format($_name.value);
-    $: fullSlug = "http://localhost:3000/workspaces/" + slug;
+    $: full = "http://localhost:3000/workspaces/" + slug;
 </script>
 
-<Modal title="Create a Workspace" size="sm" transition={fly} params={{ duration: 300, y: 5 }} bind:open={open}>
+<Modal title="Create a Workspace" size="sm" transition={scale} bind:open={open}>
     <form>
         <Input
             name="name"
@@ -73,6 +75,7 @@
             placeholder="Name"
             required={true}
             error={message($_name, { error: "duplicate", message: "This name  slug is already taken."})}
+            loading={loading.slug}
             {...$_name.meta}
             autocomplete="off"
             autofocus
@@ -86,11 +89,11 @@
             label="Slug"
             placeholder="Slug"
             required={true}
-            bind:value={fullSlug}
+            bind:value={full}
             disabled
         />
     </form>
     <div slot="footer">
-        <Button type="button" text="Create" disabled={loading} loading={loading} on:click={handleSubmit} />
+        <Button type="button" text="Create" disabled={loading.form} loading={loading.form} on:click={handleSubmit} />
     </div>
 </Modal>

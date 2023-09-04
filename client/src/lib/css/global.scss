@@ -2,6 +2,10 @@
 @import url('https://fonts.googleapis.com/css?family=Titillium Web:300,400,500,700,900');
 @import url('https://fonts.googleapis.com/css?family=Merriweather');
 
+:root {
+	view-transition-name: none;
+}
+
 * {
 	box-sizing: border-box;
 }

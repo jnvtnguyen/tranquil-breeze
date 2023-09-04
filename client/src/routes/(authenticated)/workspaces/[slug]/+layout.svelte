@@ -34,5 +34,6 @@
         flex: 1 0 auto;
         height: 100%;
         background: $color-page;
+        padding: $spacing-4;
     }
 </style>

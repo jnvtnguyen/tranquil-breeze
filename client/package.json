@@ -22,6 +22,7 @@
 		"@iconify-json/mdi": "^1.1.54",
 		"@sveltejs/adapter-auto": "^2.0.0",
 		"@sveltejs/kit": "^1.20.4",
+		"@types/debounce": "^1.2.1",
 		"@types/node": "^20.5.7",
 		"@typescript-eslint/eslint-plugin": "^5.45.0",
 		"@typescript-eslint/parser": "^5.45.0",
@@ -40,8 +41,11 @@
 	},
 	"type": "module",
 	"dependencies": {
+		"@floating-ui/dom": "^1.5.1",
+		"debounce": "^1.2.1",
 		"is-promise": "^4.0.0",
 		"jwt-decode": "^3.1.2",
+		"svrollbar": "^0.12.0",
 		"unplugin-icons": "^0.16.6",
 		"uuid": "^9.0.0"
 	}

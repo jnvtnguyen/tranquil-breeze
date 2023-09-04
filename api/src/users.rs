@@ -7,8 +7,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 
-use entity::user;
-use service::{sea_orm::SqlErr, Mutation as MutationCore, Query as QueryCore};
+use service::{sea_orm::SqlErr, CreateUser, Mutation as MutationCore, Query as QueryCore};
 
 use crate::extractor::AuthUser;
 use crate::{ApiContext, Error, Result};
@@ -60,14 +59,28 @@ struct User {
     token: String,
 }
 
+#[derive(Deserialize)]
+struct CreateUserRequest {
+    name: String,
+    email: String,
+    password: String,
+}
+
 async fn create_user(
     ctx: Extension<ApiContext>,
-    Json(mut req): Json<UserBody<user::Model>>,
+    Json(req): Json<UserBody<CreateUserRequest>>,
 ) -> Result<Json<UserBody<User>>> {
-    let password_hash = hash_password(req.user.password).await?;
-    req.user.password = password_hash;
+    let mut user: CreateUser = CreateUser {
+        name: req.user.name.to_owned(),
+        email: req.user.email.to_owned(),
+        password: req.user.password.to_owned(),
+        image: "".to_owned(),
+    };
 
-    let user = MutationCore::create_user(&ctx.db, req.user).await;
+    let password_hash = hash_password(req.user.password).await?;
+    user.password = password_hash;
+
+    let user = MutationCore::create_user(&ctx.db, user).await;
     let response: Result<Json<UserBody<User>>> = match user {
         Ok(user) => {
             let user = User {

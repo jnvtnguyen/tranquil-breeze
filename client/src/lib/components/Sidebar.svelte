@@ -1,20 +1,22 @@
 <script lang="ts">
     import type { Workspace } from "$lib/types";
-    //@ts-ignore
-    import HomeIcon from "~icons/bytesize/home";
-    import Link from "./Sidebar/Link.svelte";
+    import { LINKS } from "$lib/links"
+    import { Header, Link } from "./Sidebar/";
 
     export let workspace: Workspace;
 
-    const link = (href: string) => {
+    const linkWith = (href: string) => {
         return `/workspaces/${workspace.slug}${href}`;
     }
 </script>
 
 <div class="sidebar">
-    <Link title="Projects Home" href={link("")}>
-        <HomeIcon slot="icon" />
-    </Link>
+    <Header title="Workspace" />
+    {#each LINKS as link}
+        <Link title={link.title} href={linkWith(link.href)}>
+            <svelte:component this={link.icon} slot="icon" />
+        </Link>
+    {/each}
 </div>
 
 <style lang="scss">

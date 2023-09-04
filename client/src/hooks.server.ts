@@ -48,8 +48,3 @@ export const handle: Handle = async ({ event, resolve }): Promise<Response> => {
 
 	return await resolve(event);
 };
-
-export const handleFetch: HandleFetch = async ({ request, fetch }) => {
-	console.log(request);
-	return fetch(request);
-};

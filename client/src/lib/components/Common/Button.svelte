@@ -12,15 +12,9 @@
     export let text: string | null = null;
     export let loading: boolean = false;
     export let disabled: boolean = false;
-
-    const dispatch = createEventDispatcher();
-
-    const handleClick = () => {
-        dispatch("click");
-    }
 </script>
 
-<button {...$$restProps} class="button" {disabled} on:click={handleClick}>
+<button {...$$restProps} class="button" {disabled} on:click>
     <span class="text">
         {#if loading}
             <Spinner size="16px" />

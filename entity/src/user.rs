@@ -7,13 +7,11 @@ pub struct Model {
     #[sea_orm(primary_key)]
     #[serde(skip_deserializing)]
     pub id: i32,
-    #[sea_orm(column_name = "name")]
     pub name: String,
-    #[sea_orm(column_name = "email")]
     #[sea_orm(unique)]
     pub email: String,
-    #[sea_orm(column_name = "password")]
     pub password: String,
+    pub image: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]

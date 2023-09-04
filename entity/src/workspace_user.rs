@@ -10,22 +10,28 @@ pub struct Model {
     pub user_id: i32,
     pub workspace_id: i32,
     pub owner: bool,
+    pub activated: bool,
 }
 
-#[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
+#[derive(Copy, Clone, Debug, EnumIter)]
 pub enum Relation {
-    #[sea_orm(
-        belongs_to = "super::user::Entity",
-        from = "Column::UserId",
-        to = "super::user::Column::Id"
-    )]
     User,
-    #[sea_orm(
-        belongs_to = "super::workspace::Entity",
-        from = "Column::WorkspaceId",
-        to = "super::workspace::Column::Id"
-    )]
     Workspace,
+}
+
+impl RelationTrait for Relation {
+    fn def(&self) -> RelationDef {
+        match self {
+            Self::User => Entity::belongs_to(super::user::Entity)
+                .from(Column::UserId)
+                .to(super::user::Column::Id)
+                .into(),
+            Self::Workspace => Entity::belongs_to(super::workspace::Entity)
+                .from(Column::WorkspaceId)
+                .to(super::workspace::Column::Id)
+                .into(),
+        }
+    }
 }
 
 impl Related<super::user::Entity> for Entity {
