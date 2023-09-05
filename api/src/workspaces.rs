@@ -20,6 +20,10 @@ fn workspace_router() -> Router {
     Router::new()
         .route("/api/workspaces/:workspace_slug", get(workspace))
         .route("/api/workspaces/:workspace_slug/users", get(users))
+        .route(
+            "/api/workspaces/:workspace_slug/users/create",
+            post(create_workspace_user),
+        )
         .route_layer(middleware::from_fn(workspace_middleware))
 }
 
@@ -73,7 +77,7 @@ async fn create_workspace(
             if let Some(err) = e.sql_err() {
                 match err {
                     SqlErr::UniqueConstraintViolation(_) => {
-                        Err(Error::unprocessable_entity([("", "")]))
+                        Err(Error::unprocessable_entity([("slug", "already exists")]))
                     }
                     _ => Err(Error::SeaOrm(e)),
                 }
@@ -171,4 +175,49 @@ async fn users(
     let users = QueryCore::find_users_by_workspace_id(&ctx.db, workspace.id).await?;
 
     Ok(Json(UsersBody { users }))
+}
+
+#[derive(Deserialize)]
+struct CreateWorkspaceUserRequest {
+    email: String,
+}
+
+#[derive(Serialize)]
+struct UserBody<T> {
+    user: T,
+}
+
+async fn create_workspace_user(
+    ctx: Extension<ApiContext>,
+    Extension(workspace): Extension<workspace::Model>,
+    Json(req): Json<CreateWorkspaceUserRequest>,
+) -> Result<Json<UserBody<WorkspaceUserCombined>>> {
+    let user = QueryCore::find_user_by_email(&ctx.db, &req.email).await?;
+
+    if user.is_none() {
+        return Err(Error::NotFound);
+    }
+
+    let user = user.unwrap();
+    let workspace_user = MutationCore::create_workspace_user(&ctx.db, workspace.id, user.id).await;
+
+    let response = match workspace_user {
+        Ok(workspace_user) => Ok(Json(UserBody {
+            user: workspace_user,
+        })),
+        Err(e) => {
+            if let Some(err) = e.sql_err() {
+                match err {
+                    SqlErr::UniqueConstraintViolation(_) => {
+                        Err(Error::unprocessable_entity([("user", "already exists")]))
+                    }
+                    _ => Err(Error::SeaOrm(e)),
+                }
+            } else {
+                Err(Error::SeaOrm(e))
+            }
+        }
+    };
+
+    response
 }

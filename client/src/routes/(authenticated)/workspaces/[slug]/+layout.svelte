@@ -1,14 +1,11 @@
 <script lang="ts">
-	import type { PageData } from "./$types";
     import {Sidebar, Navbar} from "$lib/components/";
-
-    export let data: PageData;
 </script>
 
 <div class="container">
-    <Navbar workspace={data.workspace} />
+    <Navbar />
     <div class="content">
-        <Sidebar workspace={data.workspace} />
+        <Sidebar />
         <div class="main">
             <slot />
         </div>

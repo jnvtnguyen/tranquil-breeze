@@ -4,6 +4,7 @@
 	import { min, required } from "$lib/form/validators";
     import { Modal, Input, Button } from "$lib/components";
 	import { goto } from "$app/navigation";
+	import { PUBLIC_APP_HOST } from "$env/static/public";
 
     export let open: boolean = false;
 
@@ -64,7 +65,7 @@
     }
 
     $: slug = format($_name.value);
-    $: full = "http://localhost:3000/workspaces/" + slug;
+    $: full = `${PUBLIC_APP_HOST}/workspaces/` + slug;
 </script>
 
 <Modal title="Create a Workspace" size="sm" transition={scale} bind:open={open}>

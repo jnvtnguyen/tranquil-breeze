@@ -1,10 +1,8 @@
 <script lang="ts">
 	import { fade, slide } from "svelte/transition";
-	import { goto } from "$app/navigation";
 	import { PageMeta, Input, Button, Link, Alert } from '$lib/components/';
 	import { form, field, message } from '$lib/form/';
 	import { required } from '$lib/form/validators/';
-	import { storeToken } from "$lib/auth";
 
 	let loading: boolean = false;
 	let error: string | null = null;
@@ -33,19 +31,13 @@
 			});
 			loading = false
 
-			if(response?.ok) {
-				let data = await response.json();
-				let token = data.user.token;
-				storeToken(token);
-				goto("/workspaces");
+			if(response?.ok) return;
+
+			if (response.status === 401) {
+				error = "The email or password you entered is incorrect.";
 			}
 			else {
-				if (response.status === 401) {
-					error = "The email or password you entered is incorrect.";
-				}
-				else {
-					error = "An error occurred. Please try again.";
-				}
+				error = "An error occurred. Please try again.";
 			}
 		}
 	}

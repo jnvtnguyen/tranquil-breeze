@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { Workspace } from "$lib/types";
-    import { navigating } from "$app/stores";
+    import { navigating, page } from "$app/stores";
     //@ts-ignore
     import MagnifyIcon from "~icons/mdi/magnify";
     //@ts-ignore
@@ -11,8 +10,6 @@
 	import WorkspaceModal from "./WorkspaceModal.svelte";
     import { Dropdown } from "$lib/components";
 	import { fly } from "svelte/transition";
-
-    export let workspace: Workspace;
 
     let workspaceOpen: boolean = false;
     let createWorkspaceOpen: boolean = false;
@@ -27,7 +24,7 @@
     <div class="workspace">
         <div class="content">
             <img class="image" src="https://picsum.photos/200/200" />
-            <span class="name">{workspace.name}</span>
+            <span class="name">{$page.data.workspace.name}</span>
         </div>
         <div class="icon">
             {#if !$navigating}

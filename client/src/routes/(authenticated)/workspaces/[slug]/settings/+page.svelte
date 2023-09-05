@@ -1,9 +1,6 @@
 <script lang="ts">
-    import type { PageData } from "./$types";
 	import { PageMeta, Tabs, Tab } from "$lib/components/";
     import TeamTab from "$lib/components/Workspace/Settings/TeamTab.svelte";
-
-    export let data: PageData;
 </script>
 
 <PageMeta title="Settings" />
@@ -14,6 +11,6 @@
 
     </Tab>
     <Tab title="Team">
-        <TeamTab workspace={data.workspace} />
+        <TeamTab />
     </Tab>
 </Tabs>

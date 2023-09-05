@@ -1,14 +1,11 @@
 <script lang="ts">
-    import type { Workspace as WorkspaceType } from "$lib/types";
 	import Workspace from "./Navbar/Workspace.svelte";
     import Breadcrumbs from "./Breadcrumbs.svelte";
-
-    export let workspace: WorkspaceType;
 </script>
 
 <div class="navbar">
-    <Workspace workspace={workspace} />
-    <Breadcrumbs workspace={workspace} />
+    <Workspace />
+    <Breadcrumbs />
 </div>
 
 <style lang="scss">

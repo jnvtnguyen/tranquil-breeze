@@ -1,7 +1,8 @@
 import type { RequestHandler } from './$types';
+import { API_HOST } from '$env/static/private';
 
 export const GET: RequestHandler = async ({ params, url, request }) => {
-	return fetch(`http://localhost:5004/api/${params.path + url.search}`, {
+	return fetch(`${API_HOST}/api/${params.path + url.search}`, {
 		method: 'GET',
 		headers: request.headers,
 		body: request.body,
@@ -11,7 +12,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 };
 
 export const POST: RequestHandler = async ({ params, url, request }) => {
-	return fetch(`http://localhost:5004/api/${params.path + url.search}`, {
+	return fetch(`${API_HOST}/api/${params.path + url.search}`, {
 		method: 'POST',
 		headers: request.headers,
 		body: request.body,

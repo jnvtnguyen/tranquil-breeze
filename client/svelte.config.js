@@ -11,6 +11,9 @@ const config = {
 				'script-src': ['self']
 			}
 		},
+		alias: {
+			$lib: './src/lib'
+		},
 		adapter: adapter()
 	}
 };

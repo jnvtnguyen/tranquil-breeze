@@ -1,4 +1,4 @@
-import { redirect, type Handle, type HandleFetch } from '@sveltejs/kit';
+import { redirect, type Handle } from '@sveltejs/kit';
 
 const UNPROTECTED_ROUTES = ['/login', '/signup'];
 const UNPROTECTED_API_ROUTES = ['/api/login', '/api/signup', '/api/user'];

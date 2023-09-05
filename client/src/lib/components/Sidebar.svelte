@@ -1,12 +1,10 @@
 <script lang="ts">
-    import type { Workspace } from "$lib/types";
+    import { page } from "$app/stores";
     import { LINKS } from "$lib/links"
     import { Header, Link } from "./Sidebar/";
 
-    export let workspace: Workspace;
-
     const linkWith = (href: string) => {
-        return `/workspaces/${workspace.slug}${href}`;
+        return `/workspaces/${$page.data.workspace.slug}${href}`;
     }
 </script>
 

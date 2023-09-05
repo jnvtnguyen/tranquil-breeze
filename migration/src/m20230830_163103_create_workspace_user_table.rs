@@ -50,6 +50,18 @@ impl MigrationTrait for Migration {
                     )
                     .to_owned(),
             )
+            .await?;
+
+        manager
+            .create_index(
+                Index::create()
+                    .name("idx_workspace_user_userid_workspaceid")
+                    .table(WorkspaceUser::Table)
+                    .col(WorkspaceUser::UserId)
+                    .col(WorkspaceUser::WorkspaceId)
+                    .unique()
+                    .to_owned(),
+            )
             .await
     }
 

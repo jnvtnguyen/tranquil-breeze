@@ -97,7 +97,7 @@ async fn create_user(
             if let Some(err) = e.sql_err() {
                 match err {
                     SqlErr::UniqueConstraintViolation(_) => {
-                        Err(Error::unprocessable_entity([("", "")]))
+                        Err(Error::unprocessable_entity([("email", "already exists")]))
                     }
                     _ => Err(Error::SeaOrm(e)),
                 }

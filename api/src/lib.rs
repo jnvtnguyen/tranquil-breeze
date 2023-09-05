@@ -6,6 +6,7 @@ use tower_http::{add_extension::AddExtensionLayer, trace::TraceLayer};
 use migration::{Migrator, MigratorTrait};
 use service::sea_orm::{Database, DatabaseConnection};
 
+mod activations;
 mod config;
 mod error;
 mod extractor;
@@ -52,7 +53,9 @@ async fn start() -> anyhow::Result<()> {
 }
 
 fn api_router() -> Router {
-    users::router().merge(workspaces::router())
+    users::router()
+        .merge(workspaces::router())
+        .merge(activations::router())
 }
 
 pub fn main() {

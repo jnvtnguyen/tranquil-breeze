@@ -1,14 +1,11 @@
 <script lang="ts">
-	import type { Workspace } from "$lib/types";
-
-    export let workspace: Workspace;
 </script>
 
 <div class="container">
     <div class="section">
         <div class="header">
             <h4 class="title">Members</h4>
-            <p class="subtitle">Type an email of the teammate you want to invite, manager user permissions, remove users.</p>
+            <p class="subtitle">Type an email of the teammate you want to invite, you can also manage groups and permissions here.</p>
         </div>
     </div>
 </div>

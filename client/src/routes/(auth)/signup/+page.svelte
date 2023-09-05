@@ -1,10 +1,8 @@
 <script lang="ts">
 	import type { Validator } from '$lib/form/types';
-	import { goto } from '$app/navigation';
 	import { PageMeta, Input, Button, Link } from '$lib/components/';
 	import { form, field, message } from '$lib/form/';
 	import { required, email, min } from '$lib/form/validators/';
-	import { storeToken } from "$lib/auth";
 
 	let loading: {
 		form: boolean,
@@ -55,12 +53,7 @@
 
 			loading.form = false;
 
-			if(response?.ok) {
-				const data = await response.json();
-				const token = data.user.token;
-				storeToken(token);
-				goto("/workspaces");
-			}
+			if(!response?.ok) return;
 		}
 	}
 </script>

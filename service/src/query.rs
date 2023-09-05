@@ -1,17 +1,19 @@
 use ::entity::{
     user, user::Entity as User, workspace, workspace::Entity as Workspace, workspace_user,
-    workspace_user::Entity as WorkspaceUser,
+    workspace_user::Entity as WorkspaceUser, workspace_user_activation,
+    workspace_user_activation::Entity as WorkspaceUserActivation,
 };
 use sea_orm::*;
 use serde::Serialize;
+use uuid::Uuid;
 
 #[derive(Serialize, FromQueryResult)]
 pub struct WorkspaceUserCombined {
-    name: String,
-    email: String,
-    image: String,
-    owner: bool,
-    activated: bool,
+    pub name: String,
+    pub email: String,
+    pub image: String,
+    pub owner: bool,
+    pub activated: bool,
 }
 
 pub struct Query;
@@ -103,5 +105,15 @@ impl Query {
             .collect::<Vec<_>>();
 
         Ok(combined)
+    }
+
+    pub async fn find_workspace_user_activation_by_uuid(
+        db: &DbConn,
+        workspace_user_activation_id: Uuid,
+    ) -> Result<Option<workspace_user_activation::Model>, DbErr> {
+        WorkspaceUserActivation::find()
+            .filter(workspace_user_activation::Column::Uuid.eq(workspace_user_activation_id))
+            .one(db)
+            .await
     }
 }

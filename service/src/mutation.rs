@@ -1,5 +1,8 @@
-use ::entity::{user, workspace, workspace_user};
+use ::entity::{user, workspace, workspace_user, workspace_user_activation};
 use sea_orm::*;
+use uuid::Uuid;
+
+use crate::WorkspaceUserCombined;
 
 pub struct Mutation;
 pub struct CreateUser {
@@ -56,5 +59,66 @@ impl Mutation {
         transaction.commit().await?;
 
         Ok(workspace)
+    }
+
+    pub async fn create_workspace_user(
+        db: &DbConn,
+        workspace_id: i32,
+        user_id: i32,
+    ) -> Result<WorkspaceUserCombined, DbErr> {
+        let transaction = db.begin().await?;
+
+        let workspace_user = workspace_user::ActiveModel {
+            user_id: Set(user_id),
+            workspace_id: Set(workspace_id),
+            owner: Set(false),
+            activated: Set(false),
+            ..Default::default()
+        }
+        .save(&transaction)
+        .await?;
+
+        workspace_user_activation::ActiveModel {
+            uuid: Set(Uuid::new_v4()),
+            workspace_user_id: Set(workspace_user.id.to_owned().unwrap()),
+            ..Default::default()
+        }
+        .save(&transaction)
+        .await?;
+
+        transaction.commit().await?;
+
+        let user = user::Entity::find_by_id(user_id).one(db).await?.unwrap();
+
+        let combined = WorkspaceUserCombined {
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            owner: workspace_user.owner.unwrap(),
+            activated: workspace_user.activated.unwrap(),
+        };
+
+        Ok(combined)
+    }
+
+    pub async fn activate_workspace_user(
+        db: &DbConn,
+        activation: workspace_user_activation::Model,
+    ) -> Result<(), DbErr> {
+        let transaction = db.begin().await?;
+
+        workspace_user::ActiveModel {
+            id: Set(activation.workspace_user_id),
+            activated: Set(true),
+            ..Default::default()
+        }
+        .save(&transaction)
+        .await?;
+
+        activation.into_active_model().delete(&transaction).await?;
+
+        transaction.commit().await?;
+
+        Ok(())
     }
 }

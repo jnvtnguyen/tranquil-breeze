@@ -22,7 +22,7 @@
     {:then workspaces}
         <Svroller width="100%" height="320px">
             <div class="inner-workspaces">
-                {#each workspaces as workspace, i (workspace)}
+                {#each workspaces as workspace, _ (workspace)}
                     <a class="list-workspace" class:active={current === `/workspaces/${workspace.slug}`}  href="/workspaces/{workspace.slug}">
                         <img class="image" src="https://picsum.photos/200/200" />
                         <div class="list-workspace-information">
@@ -44,6 +44,13 @@
         flex-direction: column;
         border-top: 1px solid $color-border;
         border-bottom: 1px solid $color-border;
+    }
+
+    .loading {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 320px;
     }
 
     .list-workspace {

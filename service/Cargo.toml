@@ -8,6 +8,7 @@ publish = false
 anyhow = "1.0.75"
 entity = { path = "../entity" }
 serde = { version = "1.0.130", features = ["derive"] }
+uuid = "1.4.1"
 
 [dependencies.sea-orm]
 version = "0.12.2"

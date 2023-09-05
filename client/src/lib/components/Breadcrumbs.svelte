@@ -1,15 +1,12 @@
 <script lang="ts">
     import { LINKS } from "$lib/links";
-	import type { Workspace } from "$lib/types";
     import { page, navigating } from "$app/stores";
     //@ts-ignore
     import ForwardIcon from "~icons/carbon/chevron-right";
     //@ts-ignore
     import BackwardIcon from "~icons/carbon/chevron-left";
 
-    export let workspace: Workspace;
-
-    $: root = `/workspaces/${workspace.slug}`;
+    $: root = `/workspaces/${$page.data.workspace.slug}`;
     $: current = $page.url.pathname.replace(root, "");
     $: backwards = LINKS.findIndex((link) => link.href === current) - 1;
     $: crumbs = LINKS.slice(0, backwards + 2);
